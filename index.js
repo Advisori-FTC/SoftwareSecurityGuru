@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 async function main() {
-    console.log(process.env);
     await mongoose.connect(process.env.MONGO_URL);
 }
 
@@ -11,5 +10,6 @@ const Resources = new mongoose.Schema({
 });
 
 main().then( () => {
-
+    console.log('Connected');
+    process.exit();
 }).catch(err => console.log(err));
