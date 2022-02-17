@@ -1,0 +1,22 @@
+{
+  "name": "ssggithub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Advisori-FTC/SoftwareSecurityGuru.git"
+  },
+  "author": "Asan Stefanski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Advisori-FTC/SoftwareSecurityGuru/issues"
+  },
+  "homepage": "https://github.com/Advisori-FTC/SoftwareSecurityGuru#readme",
+  "dependencies": {
+    "mongoose": "^6.2.2"
+  }
+}
