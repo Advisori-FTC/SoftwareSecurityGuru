@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 async function main() {
     console.log(process.env);
+
     await mongoose.connect(process.env.MONGO_URL);
 }
 
