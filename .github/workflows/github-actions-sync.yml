@@ -1,0 +1,11 @@
+name: GitHub Syncronisation Knowledge Base
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsSL https://deb.nodesource.com/setup_12.x | bash -
+      - run: apt-get install -y nodejs
+      - run: apt-get update
+      - run: npm install
+      - run: node index.js
