@@ -4,9 +4,14 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
-      - run: npm install
-      - run: node index.js
+       - name: Sync Data
+         with: # Set the secret as an input
+          super_secret: ${{ secrets.MONGO_URL }}
+         env: # Or as an environment variable
+          super_secret: ${{ secrets.MONGO_URL }}
+       - uses: actions/checkout@v2
+       - uses: actions/setup-node@v2
+         with:
+           node-version: '14.x'
+       - run: npm install
+       - run: node index.js
