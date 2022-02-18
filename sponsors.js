@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require("path");
 const sponsorPath = "contentlib/sponsors";
-const pathToGithubCDN = '';
+const pathToGithubCDN = 'https://raw.githubusercontent.com/Advisori-FTC/SoftwareSecurityGuru/3280dbc7c9c0c271669d1405a77139507f0b18b6/';
 module.exports = function (Partner) {
     return new Promise((resolve, reject) => {
         Partner.find().exec((err, partnerList) => {
@@ -50,12 +50,15 @@ function createUpdatePartner(directoryTitle, found, Partner){
                     resolve();
                 });
             } else {
-                partner.updateOne({ name: directoryTitle},{
-                    name: directoryTitle,
-                    imageUrl: pathToGithubCDN + sponsorPath + '/' +directoryTitle +'/logo.png',
-                    homepageUrl: url.toString('utf8')
+
+                Partner.updateMany({ name: directoryTitle},{
+                    $set: {
+                        name: directoryTitle,
+                        imageUrl: pathToGithubCDN + sponsorPath + '/' +directoryTitle +'/logo.png',
+                        homepageUrl: url.toString('utf8')
+                    }
                 }, (err,data) => {
-                    console.log(err);
+                    console.log(data);
                     resolve();
                 });
             }
