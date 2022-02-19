@@ -5,6 +5,7 @@ const pathToGithubCDN = 'https://raw.githubusercontent.com/Advisori-FTC/Software
 module.exports = function (Partner) {
     return new Promise((resolve, reject) => {
         Partner.find().exec((err, partnerList) => {
+            let copyPartnerList = JSON.parse(JSON.stringify(partnerList));
             fs.readdir(sponsorPath,{}, function(err,files){
                 if (err) {
                     throw err;
@@ -16,19 +17,23 @@ module.exports = function (Partner) {
                     return !fs.statSync(file).isFile();
                 }).forEach(function (file) {
                     let found = false;
-                    let index = 0;
                     const directoryTitle = file.replace(sponsorPath + '/','');
                     partnerList.forEach( (partner) => {
                         if(partner.name === directoryTitle) {
                             found = true;
-                            partnerList.splice(index,0);
+                            copyPartnerList.splice(copyPartnerList.findIndex((item) => {return item.name === directoryTitle;}),1);
                         }
-                        index++;
                     });
                     multiPromises.push(createUpdatePartner(file.replace(sponsorPath + '/',''), found, Partner));
                 });
                 Promise.all(multiPromises).then(() => {
-                    resolve();
+                    let multiPromisesDelete = [];
+                    copyPartnerList.forEach( (partner) => {
+                        multiPromisesDelete.push(deletePartner(partner.name, Partner));
+                    });
+                    Promise.all(multiPromisesDelete).then(() =>{
+                        resolve();
+                    })
                 });
             });
         });
@@ -61,4 +66,7 @@ function createUpdatePartner(directoryTitle, found, Partner){
             }
         });
     });
+}
+function deletePartner(title,Partner) {
+    return  Partner.deleteOne({ name: title })
 }

@@ -41,6 +41,8 @@ const VersionHistorySchema = new mongoose.Schema({
 const VersionHistory = mongoose.model('VersionHistories', VersionHistorySchema);
 main().then( async () => {
     await require('./sponsors')(Partner);
-    console.log('Connected');
+    await require('./resource')(Resource,Tag, VersionHistory);
+
+    console.log('Complete!');
     process.exit();
 }).catch(err => console.log(err));
