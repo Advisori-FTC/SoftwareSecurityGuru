@@ -115,7 +115,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
     });
 }
 function getType(filePath){
-    if(filePath.indexOf('/articels/') !== -1){
+    if(filePath.indexOf('/articles/') !== -1){
         return 'ARTICLE'
     } else  if(filePath.indexOf('/news/') !== -1){
         return 'NEWS'
