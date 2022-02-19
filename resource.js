@@ -28,7 +28,15 @@ module.exports = function (Resource,Tag, VersionHistory) {
                     }
                 });
                 Promise.all(multiPromises).then(() => {
-                    resolve();
+                    let multiPromisesDelete = [];
+                    copyResourceList.forEach( (resource) => {
+                        multiPromisesDelete.push(deletePartner(resource.title, resource.language,resource.type, Resource));
+                    });
+                    Promise.all(multiPromisesDelete).then(() =>{
+                        updateCrateTags(Tag).then(() => {
+                            resolve();
+                        });
+                    })
                 });
             });
         });
@@ -51,12 +59,12 @@ function getFiles(root) {
         })
 }
 function createUpdateRessource(fileName,file, language, found, Resource, VersionHistory  ){
-    return new Promise(() => {
+    return new Promise((resolve) => {
         const type = getType(file);
         const breadCrumb = file.replace(fileName + '.md','').replace(fileName + '.md','').split(sponsorPath)[1].replace('/'+ path.basename(file),'');
         mdParser.run(file, true, true).then( (structure) => {
             const tags = getTags(JSON.parse(structure));
-            fs.readFile(file,(err, url) => {
+            fs.readFile(file,(err, dataContent) => {
                 let multiPromisesStructure = [];
                 JSON.parse(structure).forEach((line) => {
                     if(line.type === "heading") {
@@ -65,8 +73,41 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                 });
                 Promise.all(multiPromisesStructure).then((newStructure) => {
                     getAuthors(file).then((authors) => {
-                        console.log(authors.toString());
-
+                        const authorsList = authors.toString().replace('\t','').split('\n').filter((item) => { return item !== '';});
+                        if(found === false) {
+                            const newResource = new Resource({
+                                title: fileName,
+                                authors:authorsList,
+                                type: type,
+                                content: dataContent.toString('utf8'),
+                                likes:0,
+                                views:0,
+                                versionHistory:'',
+                                language: language,
+                                tags: tags,
+                                breadCrumb: breadCrumb,
+                                structure: JSON.stringify(newStructure)
+                            });
+                            newResource.save((err, data) => {
+                                resolve();
+                            });
+                        }else {
+                            Resource.updateMany({ title: fileName,  language: language,  type: type },{
+                                $set: {
+                                    title: fileName,
+                                    authors:authorsList,
+                                    type: type,
+                                    content: dataContent.toString('utf8'),
+                                    versionHistory:'',
+                                    language: language,
+                                    tags: tags,
+                                    breadCrumb: breadCrumb,
+                                    structure: JSON.stringify(newStructure)
+                                }
+                            }, (err,data) => {
+                                resolve();
+                            });
+                        }
                     });
                 });
             });
@@ -123,14 +164,38 @@ function generateStructure(structure){
 }
 function getAuthors(filePath){
     return new Promise((resolve, reject) => {
-        console.log('git log --pretty=format:"%an%x09" "' + filePath +'" | sort | uniq')
         exec('git log --pretty=format:"%an%x09" "' + filePath +'" | sort | uniq', (err, stdout, stderr) => {
             if (err) {
-                console.error(err);
                 return;
             }
-            console.log(stderr)
             resolve(stdout);
         });
     });
+}
+function deletePartner(title,language,type,Resource) {
+    return  Resource.deleteOne({ title: title,  language: language,  type: type })
+}
+function updateCrateTags(Tag){
+    return new Promise((resolve, reject) => {
+        Tag.deleteMany({}).then(() => {
+            let newTagList = [];
+            for(let key in tagList) {
+                newTagList.push(key);
+            }
+            multiCreateTag(0,Tag,newTagList, () => {
+                resolve();
+            });
+        });
+    });
+}
+function multiCreateTag(index,Tag, list,cb){
+    if(index >= list.length) {
+        cb();
+    }else {
+        const newTag = new Tag({name: list[index]});
+        newTag.save((err, data) => {
+            index++;
+            multiCreateTag(index,Tag, list,cb);
+        });
+    }
 }
