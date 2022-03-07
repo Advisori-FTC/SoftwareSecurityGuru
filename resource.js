@@ -93,7 +93,9 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                     language: dataFromArticle.lng,
                                     tags: dataFromArticle.tags,
                                     breadCrumb: breadCrumb,
-                                    structure: JSON.stringify(newStructure)
+                                    structure: JSON.stringify(newStructure),
+                                    createdAt: new Date(),
+                                    updatedAt: new Date()
                                 });
                                 newResource.save((err, data) => {
                                     resolve();
@@ -121,7 +123,8 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                         language: dataFromArticle.lng,
                                         tags: dataFromArticle.tags,
                                         breadCrumb: breadCrumb,
-                                        structure: JSON.stringify(newStructure)
+                                        structure: JSON.stringify(newStructure),
+                                        updatedAt: new Date()
                                     }
                                 }, (err,data) => {
                                     resolve();
@@ -222,6 +225,9 @@ function extractDataFromArticle(newStructure,fileName, dataContent) {
     if(tagsIndex !== -1) {
         tags = newStructure[tagsIndex].specialContent;
     }
+    tags.forEach((tag) => {
+        tagList[tag] = '';
+    });
     let previewPicture = '';
     let previewPictureIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewPicture'; });
     if(previewPictureIndex !== -1) {

@@ -14,7 +14,9 @@ const ResourceSchema = new mongoose.Schema({
     language: String,
     tags: [String],
     breadCrumb: String,
-    structure: mongoose.Schema.Types.Mixed
+    structure: mongoose.Schema.Types.Mixed,
+    createdAt: Date,
+    updatedAt: Date
 }, {collection: 'Resources'});
 const Resource = mongoose.model('Resources', ResourceSchema);
 const CategorySchema = new mongoose.Schema({
@@ -42,7 +44,7 @@ const VersionHistory = mongoose.model('VersionHistories', VersionHistorySchema);
 main().then( async () => {
     await require('./sponsors')(Partner);
     await require('./resource')(Resource,Tag, VersionHistory);
-    // await require('./categories')(Resource,Category);
+    await require('./categories')(Resource,Category);
 
     console.log('Complete!');
     process.exit();
