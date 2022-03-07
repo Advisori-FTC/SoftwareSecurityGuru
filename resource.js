@@ -95,7 +95,9 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                     breadCrumb: breadCrumb,
                                     structure: JSON.stringify(newStructure),
                                     createdAt: new Date(),
-                                    updatedAt: new Date()
+                                    updatedAt: new Date(),
+                                    previewPicture: dataFromArticle.previewPicture,
+                                    previewContent: dataFromArticle.previewContent
                                 });
                                 newResource.save((err, data) => {
                                     resolve();
@@ -124,7 +126,9 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                         tags: dataFromArticle.tags,
                                         breadCrumb: breadCrumb,
                                         structure: JSON.stringify(newStructure),
-                                        updatedAt: new Date()
+                                        updatedAt: new Date(),
+                                        previewPicture: dataFromArticle.previewPicture,
+                                        previewContent: dataFromArticle.previewContent
                                     }
                                 }, (err,data) => {
                                     resolve();
@@ -232,6 +236,9 @@ function extractDataFromArticle(newStructure,fileName, dataContent) {
     let previewPictureIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewPicture'; });
     if(previewPictureIndex !== -1) {
         previewPicture = newStructure[previewPictureIndex].specialContent;
+    }
+    if(previewPicture === ''){
+        previewPicture = '/assets/examplePics/nodeJSExample.png';
     }
     let previewContent = '';
     let previewContentIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewContent'; });

@@ -14,6 +14,8 @@ const ResourceSchema = new mongoose.Schema({
     language: String,
     tags: [String],
     breadCrumb: String,
+    previewPicture: String,
+    previewContent: String,
     structure: mongoose.Schema.Types.Mixed,
     createdAt: Date,
     updatedAt: Date
