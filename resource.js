@@ -74,9 +74,15 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                 Promise.all(multiPromisesStructure).then((newStructure) => {
                     getAuthors(file).then((authors) => {
                         const authorsList = authors.toString().replace('\t','').split('\n').filter((item) => { return item !== '';});
+                        let title = '';
+                        if(newStructure.length > 0) {
+                            title = newStructure[0].title;
+                        } else {
+                            title = fileName;
+                        }
                         if(found === false) {
                             const newResource = new Resource({
-                                title: fileName,
+                                title: title,
                                 authors:authorsList,
                                 type: type,
                                 content: dataContent.toString('utf8'),
@@ -94,7 +100,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                         }else {
                             Resource.updateMany({ title: fileName,  language: language,  type: type },{
                                 $set: {
-                                    title: fileName,
+                                    title: title,
                                     authors:authorsList,
                                     type: type,
                                     content: dataContent.toString('utf8'),
@@ -197,5 +203,24 @@ function multiCreateTag(index,Tag, list,cb){
             index++;
             multiCreateTag(index,Tag, list,cb);
         });
+    }
+}
+function extractDataFromArticle(newStructure,fileName) {
+    let title = '';
+    let titleIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppTitle'; });
+
+    let authors = [];
+    let previewPicture = '';
+    let previewContent = '';
+    let tags = [];
+
+
+    return {
+        title,
+        authors,
+        previewPicture,
+        previewContent,
+        tags,
+        newStructure
     }
 }

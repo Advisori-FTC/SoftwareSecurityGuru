@@ -42,6 +42,7 @@ const VersionHistory = mongoose.model('VersionHistories', VersionHistorySchema);
 main().then( async () => {
     await require('./sponsors')(Partner);
     await require('./resource')(Resource,Tag, VersionHistory);
+    // await require('./categories')(Resource,Category);
 
     console.log('Complete!');
     process.exit();
