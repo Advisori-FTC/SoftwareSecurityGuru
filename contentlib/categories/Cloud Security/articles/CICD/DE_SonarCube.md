@@ -1,15 +1,31 @@
-# Warum SonarCube
+# Warum ist SonarCube sowas Toll asdas asd  asd
 
 ## Hallo withFileTypes
-#Tags
+
+
+
+
+
+
+# AppTitle
+Warum ist SonarCube sowas Toll
+
+# AppType
+News
+
+# AppTags
  - Asan
  - Bsan
  - Csan
-# AppTitle
-Sonar Cube
+
 # AppPreviewPicture
 https://bla.bla.it/
+
 # AppPreviewContent
-Das ist ein Preview
+Das ist ein Preview asdas asdj asdnh
+
 # AppAuthors
  - stefanskiasan
+
+# AppLanguage
+DE

@@ -3,7 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const mdParser = require('md-hierarchical-parser')
 const { spawn, exec } = require('child_process');
+const gitlog = require("gitlog").default;
 let tagList = {};
+const specialComands = ['AppTitle','AppType', 'AppAuthors', 'AppTags', 'AppPreviewPicture', 'AppPreviewContent', 'AppLanguage'];
 module.exports = function (Resource,Tag, VersionHistory) {
     return new Promise((resolve, reject) => {
         Resource.find().exec((err, resourceList) => {
@@ -60,10 +62,8 @@ function getFiles(root) {
 }
 function createUpdateRessource(fileName,file, language, found, Resource, VersionHistory  ){
     return new Promise((resolve) => {
-        const type = getType(file);
         const breadCrumb = file.replace(fileName + '.md','').replace(fileName + '.md','').split(sponsorPath)[1].replace('/'+ path.basename(file),'');
         mdParser.run(file, true, true).then( (structure) => {
-            const tags = getTags(JSON.parse(structure));
             fs.readFile(file,(err, dataContent) => {
                 let multiPromisesStructure = [];
                 JSON.parse(structure).forEach((line) => {
@@ -72,85 +72,89 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                     }
                 });
                 Promise.all(multiPromisesStructure).then((newStructure) => {
-                    getAuthors(file).then((authors) => {
-                        const authorsList = authors.toString().replace('\t','').split('\n').filter((item) => { return item !== '';});
-                        let title = '';
-                        if(newStructure.length > 0) {
-                            title = newStructure[0].title;
-                        } else {
-                            title = fileName;
-                        }
-                        if(found === false) {
-                            const newResource = new Resource({
-                                title: title,
-                                authors:authorsList,
-                                type: type,
-                                content: dataContent.toString('utf8'),
-                                likes:0,
-                                views:0,
-                                versionHistory:'',
-                                language: language,
-                                tags: tags,
-                                breadCrumb: breadCrumb,
-                                structure: JSON.stringify(newStructure)
-                            });
-                            newResource.save((err, data) => {
-                                resolve();
-                            });
-                        }else {
-                            Resource.updateMany({ title: fileName,  language: language,  type: type },{
-                                $set: {
-                                    title: title,
-                                    authors:authorsList,
-                                    type: type,
-                                    content: dataContent.toString('utf8'),
-                                    versionHistory:'',
-                                    language: language,
-                                    tags: tags,
+                    const dataFromArticle = extractDataFromArticle(newStructure,fileName,dataContent.toString('utf8'));
+                    gitlog({
+                        repo:  __dirname,
+                        number: 20,
+                        file: file,
+                        execOptions: { maxBuffer: 1000 * 1024 },
+                    }, function (error, commits) {
+                        // Commits is an array of commits in the repo
+                        getComments(file).then((versionHistory) => {
+                            if(found === false) {
+                                const newResource = new Resource({
+                                    title: dataFromArticle.title,
+                                    authors:dataFromArticle.authors,
+                                    type: dataFromArticle.type,
+                                    content: dataFromArticle.content,
+                                    likes:0,
+                                    views:0,
+                                    versionHistory: JSON.stringify(commits),
+                                    language: dataFromArticle.lng,
+                                    tags: dataFromArticle.tags,
                                     breadCrumb: breadCrumb,
                                     structure: JSON.stringify(newStructure)
-                                }
-                            }, (err,data) => {
-                                resolve();
-                            });
-                        }
+                                });
+                                newResource.save((err, data) => {
+                                    resolve();
+                                });
+                            }else {
+                                Resource.updateMany({
+                                    $and:[
+                                        {
+                                            title: dataFromArticle.title
+                                        } ,
+                                        {
+                                            language: dataFromArticle.lng
+                                        },
+                                        {
+                                            type:dataFromArticle.type
+                                        }
+                                    ]
+                                },{
+                                    $set: {
+                                        title: dataFromArticle.title,
+                                        authors: dataFromArticle.authors,
+                                        type: dataFromArticle.type,
+                                        content: dataFromArticle.content,
+                                        versionHistory:JSON.stringify(commits),
+                                        language: dataFromArticle.lng,
+                                        tags: dataFromArticle.tags,
+                                        breadCrumb: breadCrumb,
+                                        structure: JSON.stringify(newStructure)
+                                    }
+                                }, (err,data) => {
+                                    resolve();
+                                });
+                            }
+                        });
                     });
                 });
             });
         });
     });
 }
-function getType(filePath){
-    if(filePath.indexOf('/articles/') !== -1){
-        return 'ARTICLE'
-    } else  if(filePath.indexOf('/news/') !== -1){
-        return 'NEWS'
-    } else  if(filePath.indexOf('/tutorials/') !== -1){
-        return 'TUTORIAL'
-    }
-}
-function getTags (structure){
-    let tagTempList = [];
-    structure.forEach((tag) => {
-        if(tag.type === 'heading'){
-            if(tag.children[0].value === 'Tags'){
-                if(tag.children.length > 1) {
-                    tag.children[1].children.forEach((child) => {
-                        tagTempList.push(child.children[0].children[0].value);
-                        tagList[child.children[0].children[0].value] = '';
-                    });
-                }
-            }
-        }
-    });
-    return tagTempList;
-}
 function generateStructure(structure){
     return new Promise((resolve, reject) => {
         let obj = {
             title: structure.children[0].value,
             id: structure.depth + '_'+ structure.children[0].value,
-            children:[]
+            children:[],
+            specialContent:''
+        }
+        if(specialComands.indexOf(structure.children[0].value) !== -1){
+            if(structure.children[1].children[0].type === 'text') {
+                obj.specialContent = structure.children[1].children[0].value;
+            }
+            if(structure.children[1].children[0].type === 'listItem') {
+                obj.specialContent = structure.children[1].children.map((dataItem) => {
+
+                    return dataItem.children[0].children[0].value;
+                });
+            }
+            if(structure.children[1].children[0].type === 'inlineLink') {
+                obj.specialContent = structure.children[1].children[0].value;
+            }
         }
         if(structure.children.length > 1) {
             const multiPromises = [];
@@ -166,16 +170,6 @@ function generateStructure(structure){
         }else {
             resolve(obj);
         }
-    });
-}
-function getAuthors(filePath){
-    return new Promise((resolve, reject) => {
-        exec('git log --pretty=format:"%an%x09" "' + filePath +'" | sort | uniq', (err, stdout, stderr) => {
-            if (err) {
-                return;
-            }
-            resolve(stdout);
-        });
     });
 }
 function deletePartner(title,language,type,Resource) {
@@ -205,22 +199,62 @@ function multiCreateTag(index,Tag, list,cb){
         });
     }
 }
-function extractDataFromArticle(newStructure,fileName) {
+function extractDataFromArticle(newStructure,fileName, dataContent) {
     let title = '';
     let titleIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppTitle'; });
-
+    if(titleIndex !== -1) {
+        title = newStructure[titleIndex].specialContent;
+    }else {
+        title = fileName;
+    }
+    let type = '';
+    let typeIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppType'; });
+    if(typeIndex !== -1) {
+        type = newStructure[typeIndex].specialContent;
+    }
     let authors = [];
-    let previewPicture = '';
-    let previewContent = '';
+    let authorsIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppAuthors'; });
+    if(authorsIndex !== -1) {
+        authors = newStructure[authorsIndex].specialContent;
+    }
     let tags = [];
-
-
+    let tagsIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppTags'; });
+    if(tagsIndex !== -1) {
+        tags = newStructure[tagsIndex].specialContent;
+    }
+    let previewPicture = '';
+    let previewPictureIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewPicture'; });
+    if(previewPictureIndex !== -1) {
+        previewPicture = newStructure[previewPictureIndex].specialContent;
+    }
+    let previewContent = '';
+    let previewContentIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewContent'; });
+    if(previewContentIndex !== -1) {
+        previewContent = newStructure[previewContentIndex].specialContent;
+    }
+    let lng = '';
+    let lngIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppLanguage'; });
+    if(lngIndex !== -1) {
+        lng = newStructure[lngIndex].specialContent;
+    }
     return {
         title,
         authors,
         previewPicture,
         previewContent,
         tags,
+        type,
+        lng,
         newStructure
     }
+}
+function getComments(filePath){
+    return new Promise((resolve, reject) => {
+        exec('git log "' + filePath +'" | sort | uniq', (err, stdout, stderr) => {
+            if (err) {
+                return;
+            }
+            resolve(stdout);
+        });
+    });
 }
