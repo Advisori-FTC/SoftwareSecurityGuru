@@ -79,62 +79,69 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                         file: file,
                         execOptions: { maxBuffer: 1000 * 1024 },
                     }, function (error, commits) {
+                        commits = commits.map((dataItem) => {
+                            return {
+                                _id: dataItem.hash,
+                                author: dataItem.authorName,
+                                message: dataItem.subject,
+                                githubLink: 'https://github.com/Advisori-FTC/SoftwareSecurityGuru/commit/' + dataItem.hash,
+                                timestamp: dataItem.authorDate
+                            }
+                        });
                         // Commits is an array of commits in the repo
-                        getComments(file).then((versionHistory) => {
-                            if(found === false) {
-                                const newResource = new Resource({
+                        if(found === false) {
+                            const newResource = new Resource({
+                                title: dataFromArticle.title,
+                                authors:dataFromArticle.authors,
+                                type: dataFromArticle.type,
+                                content: dataFromArticle.content,
+                                likes:0,
+                                views:0,
+                                versionHistory: JSON.stringify(commits),
+                                language: dataFromArticle.lng,
+                                tags: dataFromArticle.tags,
+                                breadCrumb: breadCrumb,
+                                structure: JSON.stringify(newStructure),
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                                previewPicture: dataFromArticle.previewPicture,
+                                previewContent: dataFromArticle.previewContent
+                            });
+                            newResource.save((err, data) => {
+                                resolve();
+                            });
+                        }else {
+                            Resource.updateMany({
+                                $and:[
+                                    {
+                                        title: dataFromArticle.title
+                                    } ,
+                                    {
+                                        language: dataFromArticle.lng
+                                    },
+                                    {
+                                        type:dataFromArticle.type
+                                    }
+                                ]
+                            },{
+                                $set: {
                                     title: dataFromArticle.title,
-                                    authors:dataFromArticle.authors,
+                                    authors: dataFromArticle.authors,
                                     type: dataFromArticle.type,
                                     content: dataFromArticle.content,
-                                    likes:0,
-                                    views:0,
-                                    versionHistory: JSON.stringify(commits),
+                                    versionHistory:JSON.stringify(commits),
                                     language: dataFromArticle.lng,
                                     tags: dataFromArticle.tags,
                                     breadCrumb: breadCrumb,
                                     structure: JSON.stringify(newStructure),
-                                    createdAt: new Date(),
                                     updatedAt: new Date(),
                                     previewPicture: dataFromArticle.previewPicture,
                                     previewContent: dataFromArticle.previewContent
-                                });
-                                newResource.save((err, data) => {
-                                    resolve();
-                                });
-                            }else {
-                                Resource.updateMany({
-                                    $and:[
-                                        {
-                                            title: dataFromArticle.title
-                                        } ,
-                                        {
-                                            language: dataFromArticle.lng
-                                        },
-                                        {
-                                            type:dataFromArticle.type
-                                        }
-                                    ]
-                                },{
-                                    $set: {
-                                        title: dataFromArticle.title,
-                                        authors: dataFromArticle.authors,
-                                        type: dataFromArticle.type,
-                                        content: dataFromArticle.content,
-                                        versionHistory:JSON.stringify(commits),
-                                        language: dataFromArticle.lng,
-                                        tags: dataFromArticle.tags,
-                                        breadCrumb: breadCrumb,
-                                        structure: JSON.stringify(newStructure),
-                                        updatedAt: new Date(),
-                                        previewPicture: dataFromArticle.previewPicture,
-                                        previewContent: dataFromArticle.previewContent
-                                    }
-                                }, (err,data) => {
-                                    resolve();
-                                });
-                            }
-                        });
+                                }
+                            }, (err,data) => {
+                                resolve();
+                            });
+                        }
                     });
                 });
             });
@@ -258,16 +265,7 @@ function extractDataFromArticle(newStructure,fileName, dataContent) {
         tags,
         type,
         lng,
-        newStructure
+        newStructure,
+        content:dataContent
     }
-}
-function getComments(filePath){
-    return new Promise((resolve, reject) => {
-        exec('git log "' + filePath +'" | sort | uniq', (err, stdout, stderr) => {
-            if (err) {
-                return;
-            }
-            resolve(stdout);
-        });
-    });
 }

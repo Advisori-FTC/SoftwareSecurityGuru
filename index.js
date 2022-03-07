@@ -4,6 +4,7 @@ async function main() {
 }
 
 const ResourceSchema = new mongoose.Schema({
+    _id: mongoose.Types.ObjectId,
     authors: [String],
     title: String,
     type: String,
@@ -16,7 +17,7 @@ const ResourceSchema = new mongoose.Schema({
     breadCrumb: String,
     previewPicture: String,
     previewContent: String,
-    structure: mongoose.Schema.Types.Mixed,
+    structure: String,
     createdAt: Date,
     updatedAt: Date
 }, {collection: 'Resources'});
