@@ -20,7 +20,26 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 XSS ist eine bekannte Schwachstelle im Webumfeld.
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. 
-# Tags
+
+# AppTitle
+XSS Schwachstellen in Hybrid Apps
+
+# AppType
+Article
+
+# AppTags
 - Web
 - XSS
 - Vulnerability
+
+# AppPreviewPicture
+https://bla.bla.it/
+
+# AppPreviewContent
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+
+# AppAuthors
+- stefanskiasan
+
+# AppLanguage
+DE

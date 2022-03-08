@@ -1,6 +1,6 @@
-# Warum ist SonarCube sowas Toll asdas asd  asd
+# Automatisierte Code Analyse mit SonarCube
 
-## Hallo withFileTypes
+
 
 
 
@@ -8,21 +8,21 @@
 
 
 # AppTitle
-Warum ist SonarCube sowas Toll
+Automatisierte Code Analyse mit SonarCube
 
 # AppType
 News
 
 # AppTags
- - Asan
- - Bsan
- - Csan
+ - SonarCube
+ - CI/CD
+ - Static/Dynamic Code Analyse
 
 # AppPreviewPicture
 https://bla.bla.it/
 
 # AppPreviewContent
-Das ist ein Preview asdas asdj asdnh
+Mit SonarCube den Entwicklungsprozess Optimieren.
 
 # AppAuthors
  - stefanskiasan

@@ -43,9 +43,26 @@ for($i=0; $i<10; $i++) {
     ech 'Das ist ein Testdokument lol.';
 }
 ```
-# Tags
+
+# AppTitle
+XSS Schwachstellen in PHP beheben
+
+# AppType
+Tutorials
+
+# AppTags
 - Web
 - XSS
 - Vulnerability
- - Asan
- - Bsan
+
+# AppPreviewPicture
+https://bla.bla.it/
+
+# AppPreviewContent
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+
+# AppAuthors
+- stefanskiasan
+
+# AppLanguage
+DE

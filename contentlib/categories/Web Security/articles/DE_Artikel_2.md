@@ -24,3 +24,28 @@ Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod 
 - Web
 - XSS
 - Vulnerability
+
+
+# AppTitle
+TLS 1.3 Grundlagen
+
+# AppType
+Article
+
+# AppTags
+- Oauth 2.0
+- Authentication
+
+# AppPreviewPicture
+https://bla.bla.it/
+
+# AppPreviewContent
+Lorem ipsum dolor sit amet, consetetur sadipscing elitr
+
+# AppAuthors
+- stefanskiasan
+
+# AppLanguage
+DE
+
+
