@@ -16,7 +16,7 @@ News
 - Vulnerability
 
 # AppPreviewPicture
-https://bla.bla.it/
+https://secguru.dev.azcld.advisori.de/assets/defaultNews.png
 
 # AppPreviewContent
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr

@@ -4,7 +4,6 @@ async function main() {
 }
 
 const ResourceSchema = new mongoose.Schema({
-    _id: mongoose.Types.ObjectId,
     authors: [String],
     title: String,
     type: String,

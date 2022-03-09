@@ -62,7 +62,7 @@ Tutorials
 - IOT
 
 # AppPreviewPicture
-https://bla.bla.it/
+https://secguru.dev.azcld.advisori.de/assets/defaultTutorial.png
 
 # AppPreviewContent
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr
