@@ -19,7 +19,7 @@ News
 - Static/Dynamic Code Analyse
 
 # AppPreviewPicture
-https://secguru.dev.azcld.advisori.de/assets/defaultArticle.png
+https://secguru.dev.azcld.advisori.de/assets/defaultNews.png
 
 # AppPreviewContent
 Optimize the development process with SonarCube.
