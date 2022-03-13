@@ -1,4 +1,4 @@
-# GitHub OAuth with NestJS
+# GitHub OAuth Anbindung mit NestJS
 Dieses Tutorial liefert eine Anleitung, um Autorisierung über das OAuth Protokoll für Github zu
 implementieren. Als Client dient ein NestJS Backend. Die Implementierung wird mithilfe der bekannten
 Express Bibliothek "Passport" umgesetzt. Das OAuth Protokoll ermöglicht es einer Anwendung, 
