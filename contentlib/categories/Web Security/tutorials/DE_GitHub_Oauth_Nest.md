@@ -232,7 +232,7 @@ Damit sind alle Teile der OAuth Anbindung fertig implementiert. Das Access Token
 Autorisierung sicher in der Datenbank abgelegt und kann ab sofort für API Aufrufe verwendet werden.
 
 # AppTitle
-GitHub OAuth with NestJS
+GitHub OAuth mit NestJS
 
 # AppType
 Tutorial 
