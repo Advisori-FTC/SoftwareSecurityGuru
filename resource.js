@@ -304,10 +304,13 @@ function extractDataFromArticle(newStructure, fileName, dataContent) {
         switch (type) {
             case 'Article':
                 previewPicture = '/assets/defaultArticle.png';
+                break;
             case 'Tutorial':
                 previewPicture = '/assets/defaultTutorial.png';
+                break;
             case 'News':
                 previewPicture = '/assets/defaultNews.png';
+                break;
         }
 
     }

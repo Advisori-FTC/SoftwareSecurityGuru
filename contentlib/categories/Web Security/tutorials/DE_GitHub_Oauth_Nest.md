@@ -10,6 +10,9 @@ Express Bibliothek "Passport" umgesetzt.
 # AppAuthors
 - m-wagner98
 
+# AppPreviewPicture
+https://secguru.dev.azcld.advisori.de/assets/defaultTutorial.png
+
 # AppLanguage
 DE
 
