@@ -29,7 +29,7 @@ implementieren. Als Client dient ein NestJS Backend. Die Implementierung wird mi
 Express Bibliothek "Passport" umgesetzt. Das OAuth Protokoll ermöglicht es einer Anwendung, 
 auf Ressourcen eines Nutzers zuzugreifen, die bei einer anderen Anwendung gespeichert sind. Der
 Benutzer muss hierzu nicht seine Zugangsdaten preisgeben, stattdessen autorisiert er die zugreifende
-Anwendung für den Zugriff auf seine Ressourcen.  
+Anwendung für den Zugriff auf seine Ressourcen (weitere Informationen zum OAuth Protokoll finden Sie hier: https://de.wikipedia.org/wiki/OAuth).     
 Im vorliegenden Beispiel soll ein NestJS Backend auf GitHub-Profilinformationen von Benutzern zugreifen
 können, weshalb hierfür eine OAuth Anbindung an GitHub benötigt wird.
 

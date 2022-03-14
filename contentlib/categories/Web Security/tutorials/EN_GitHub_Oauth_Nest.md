@@ -4,7 +4,7 @@ A NestJS backend is used as the client. The implementation is done using the wel
 express library "Passport". The OAuth protocol allows an application,
 to access resources of a user that are managed by another application. The
 user does not have to disclose his credentials, instead he authorizes the accessing
-application to access the resources.  
+application to access the resources (for further information on the OAuth protocol see https://en.wikipedia.org/wiki/OAuth).  
 In this example, we want a NestJS backend to be able to access a users' GitHub profile information
 which is why an OAuth connection to GitHub is required.
 
