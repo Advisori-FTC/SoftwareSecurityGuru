@@ -1,3 +1,30 @@
+<!--CONFIG-START-->
+# AppTitle
+GitHub OAuth with NestJS
+
+# AppType
+Tutorial
+
+# AppPreviewContent
+This tutorial provides instructions for implementing authorization via the OAuth protocol for GitHub.
+A NestJS backend is used as the client. The implementation is done using the well known
+express library "Passport".
+
+# AppAuthors
+- m-wagner98
+
+# AppLanguage
+DE
+
+# AppTags
+- Web
+- Oauth
+- NestJS
+- Authorization
+- Passport
+
+<!--CONFIG-END-->
+
 # GitHub OAuth with NestJS
 This tutorial provides instructions for implementing authorization via the OAuth protocol for GitHub.
 A NestJS backend is used as the client. The implementation is done using the well known
@@ -223,27 +250,3 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github2'){
 ```
 Now all parts of the OAuth connection are implemented. The Access Token has been stored securely in the
 database after authorization and can now be used for API requests.
-
-# AppTitle
-GitHub OAuth with NestJS
-
-# AppType
-Tutorial 
-
-# AppPreviewContent
-This tutorial provides instructions for implementing authorization via the OAuth protocol for GitHub.
-A NestJS backend is used as the client. The implementation is done using the well known
-express library "Passport".
-
-# AppAuthors
-- m-wagner98
-
-# AppLanguage
-DE
-
-# AppTags
-- Web
-- Oauth
-- NestJS
-- Authorization
-- Passport
