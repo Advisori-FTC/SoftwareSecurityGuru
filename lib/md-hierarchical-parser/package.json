@@ -1,0 +1,58 @@
+{
+  "_from": "md-hierarchical-parser@^1.0.1",
+  "_id": "md-hierarchical-parser@1.0.1",
+  "_inBundle": false,
+  "_integrity": "sha512-Dp+n7U+WmUNU1tMy6YT3AaX8D3+QWNvvh/SUGOqtzxeEtmBjsHUpV1qC9ZPN2jcno3OsHZ+MhEr8HlgBG6tPQw==",
+  "_location": "/md-hierarchical-parser",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "md-hierarchical-parser@^1.0.1",
+    "name": "md-hierarchical-parser",
+    "escapedName": "md-hierarchical-parser",
+    "rawSpec": "^1.0.1",
+    "saveSpec": null,
+    "fetchSpec": "^1.0.1"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/md-hierarchical-parser/-/md-hierarchical-parser-1.0.1.tgz",
+  "_shasum": "fb44acd6e18cba90ec9de883748ced70a9df716c",
+  "_spec": "md-hierarchical-parser@^1.0.1",
+  "_where": "/Users/asanstefanski/Projekte/ssgGithub",
+  "author": {
+    "name": "Hyeon Jeon",
+    "email": "jeonhyun97@gmail.com",
+    "url": "http://hyeonjeon.com"
+  },
+  "bugs": {
+    "url": "https://github.com/jeonhyun97/md-hierarchical-parser/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "md-mdast": "^3.4.0",
+    "stack-lifo": "^0.1.6"
+  },
+  "deprecated": false,
+  "description": "parser which generates parsed hierarchical structure of markdown",
+  "homepage": "https://github.com/jeonhyun97/md-hierarchical-parser#readme",
+  "keywords": [
+    "markdown",
+    "parser",
+    "json"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "name": "md-hierarchical-parser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeonhyun97/md-hierarchical-parser.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.1"
+}

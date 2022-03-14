@@ -18,7 +18,8 @@ const ResourceSchema = new mongoose.Schema({
     previewContent: String,
     structure: String,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    fileName: String
 }, {collection: 'Resources'});
 const Resource = mongoose.model('Resources', ResourceSchema);
 const CategorySchema = new mongoose.Schema({

@@ -1,7 +1,9 @@
 const sponsorPath = "contentlib/categories";
 const path = require('path');
 const fs = require('fs');
-const mdParser = require('md-hierarchical-parser')
+const mdjs = require("@moox/markdown-to-json");
+
+
 const { spawn, exec } = require('child_process');
 const gitlog = require("gitlog").default;
 let tagList = {};
@@ -15,18 +17,14 @@ module.exports = function (Resource,Tag, VersionHistory) {
                 fileList.forEach((file) => {
                     if(path.extname(file) === ".md") {
                         let found = false;
-                        let tempFileName = path.basename(file).replace('.md','').split('_');
-                        if(tempFileName.length > 1) {
-                            const language = tempFileName[0].toLowerCase();
-                            const fileName = tempFileName[1].toLowerCase();
-                            resourceList.forEach( (resource) => {
-                                if(resource.title === fileName) {
-                                    found = true;
-                                    copyResourceList.splice(copyResourceList.findIndex((item) => {return item.title === fileName;}),1);
-                                }
-                            });
-                            multiPromises.push(createUpdateRessource(fileName,file,language, found, Resource, VersionHistory ));
-                        }
+                        let myFilename = path.basename(file);
+                        resourceList.forEach( (resource) => {
+                            if(resource.fileName === myFilename) {
+                                found = true;
+                                copyResourceList.splice(copyResourceList.findIndex((item) => {return item.fileName === myFilename;}),1);
+                            }
+                        });
+                        multiPromises.push(createUpdateRessource(myFilename,file,"", found, Resource, VersionHistory ));
                     }
                 });
                 Promise.all(multiPromises).then(() => {
@@ -63,128 +61,137 @@ function getFiles(root) {
 function createUpdateRessource(fileName,file, language, found, Resource, VersionHistory  ){
     return new Promise((resolve) => {
         const breadCrumb = file.replace(fileName + '.md','').replace(fileName + '.md','').split(sponsorPath)[1].replace('/'+ path.basename(file),'');
-        mdParser.run(file, true, true).then( (structure) => {
+
             fs.readFile(file,(err, dataContent) => {
-                let multiPromisesStructure = [];
-                JSON.parse(structure).forEach((line) => {
-                    if(line.type === "heading") {
-                        multiPromisesStructure.push(generateStructure(line));
+                if(err){
+                    console.log(err);
+                    return;
+                }
+                if(dataContent.toString('utf8').indexOf('<!--CONFIG-END-->') !== -1) {
+                    const configContent = dataContent.toString('utf8').split('<!--CONFIG-END-->')[0].replace('<!--CONFIG-START-->','').replace('\r','');
+                    const configFile = mdjs.markdownAsJsTree(configContent).body.children;
+                    const dataFromArticle = extractDataFromArticle(configFile,fileName,dataContent.toString('utf8'));
+                    if(dataFromArticle.content.split('<!--CONFIG-END-->')[1].length > 0) {
+                        dataFromArticle.content = dataFromArticle.content.split('<!--CONFIG-END-->')[1];
                     }
-                });
-                Promise.all(multiPromisesStructure).then((newStructure) => {
-                    const dataFromArticle = extractDataFromArticle(newStructure,fileName,dataContent.toString('utf8'));
-                    gitlog({
-                        repo:  __dirname,
-                        number: 20,
-                        file: file,
-                        execOptions: { maxBuffer: 1000 * 1024 },
-                    }, function (error, commits) {
-                        commits = commits.map((dataItem) => {
-                            return {
-                                _id: dataItem.hash,
-                                author: dataItem.authorName,
-                                message: dataItem.subject,
-                                githubLink: 'https://github.com/Advisori-FTC/SoftwareSecurityGuru/commit/' + dataItem.hash,
-                                timestamp: dataItem.authorDate
+                    const tempJSONContent = mdjs.markdownAsJsTree(dataFromArticle.content);
+                    generateStructure(tempJSONContent.headings,1,[]).then((newStructure) => {
+                        gitlog({
+                            repo:  __dirname,
+                            number: 20,
+                            file: file,
+                            execOptions: { maxBuffer: 1000 * 1024 },
+                        }, function (error, commits) {
+                            if (error) {
+                                console.log(error);
+                                return;
                             }
-                        });
-                        // Commits is an array of commits in the repo
-                        if(found === false) {
-                            const newResource = new Resource({
-                                title: dataFromArticle.title,
-                                authors:dataFromArticle.authors,
-                                type: dataFromArticle.type,
-                                content: dataFromArticle.content,
-                                likes:0,
-                                views:0,
-                                versionHistory: JSON.stringify(commits),
-                                language: dataFromArticle.lng,
-                                tags: dataFromArticle.tags,
-                                breadCrumb: breadCrumb,
-                                structure: JSON.stringify(newStructure),
-                                createdAt: new Date(),
-                                updatedAt: new Date(),
-                                previewPicture: dataFromArticle.previewPicture,
-                                previewContent: dataFromArticle.previewContent
+                            commits = commits.map((dataItem) => {
+                                return {
+                                    _id: dataItem.hash,
+                                    author: dataItem.authorName,
+                                    message: dataItem.subject,
+                                    githubLink: 'https://github.com/Advisori-FTC/SoftwareSecurityGuru/commit/' + dataItem.hash,
+                                    timestamp: dataItem.authorDate
+                                }
                             });
-                            newResource.save((err, data) => {
-                                resolve();
-                            });
-                        }else {
-                            Resource.updateMany({
-                                $and:[
-                                    {
-                                        title: dataFromArticle.title
-                                    } ,
-                                    {
-                                        language: dataFromArticle.lng
-                                    },
-                                    {
-                                        type:dataFromArticle.type
-                                    }
-                                ]
-                            },{
-                                $set: {
+                            // Commits is an array of commits in the repo
+                            if(found === false) {
+                                const newResource = new Resource({
                                     title: dataFromArticle.title,
-                                    authors: dataFromArticle.authors,
+                                    authors:dataFromArticle.authors,
                                     type: dataFromArticle.type,
                                     content: dataFromArticle.content,
-                                    versionHistory:JSON.stringify(commits),
+                                    likes:0,
+                                    views:0,
+                                    versionHistory: JSON.stringify(commits),
                                     language: dataFromArticle.lng,
                                     tags: dataFromArticle.tags,
                                     breadCrumb: breadCrumb,
                                     structure: JSON.stringify(newStructure),
+                                    createdAt: new Date(),
                                     updatedAt: new Date(),
                                     previewPicture: dataFromArticle.previewPicture,
-                                    previewContent: dataFromArticle.previewContent
-                                }
-                            }, (err,data) => {
-                                resolve();
-                            });
-                        }
+                                    previewContent: dataFromArticle.previewContent,
+                                    fileName:fileName
+                                });
+                                newResource.save((err, data) => {
+                                    if(err){
+                                        console.log(err);
+                                        return;
+                                    }
+                                    resolve();
+                                });
+                            }else {
+                                Resource.updateMany({
+                                    $and:[
+                                        {
+                                            title: dataFromArticle.title
+                                        } ,
+                                        {
+                                            language: dataFromArticle.lng
+                                        },
+                                        {
+                                            type:dataFromArticle.type
+                                        }
+                                    ]
+                                },{
+                                    $set: {
+                                        title: dataFromArticle.title,
+                                        authors: dataFromArticle.authors,
+                                        type: dataFromArticle.type,
+                                        content: dataFromArticle.content,
+                                        versionHistory:JSON.stringify(commits),
+                                        language: dataFromArticle.lng,
+                                        tags: dataFromArticle.tags,
+                                        breadCrumb: breadCrumb,
+                                        structure: JSON.stringify(newStructure),
+                                        updatedAt: new Date(),
+                                        previewPicture: dataFromArticle.previewPicture,
+                                        previewContent: dataFromArticle.previewContent,
+                                        fileName:fileName
+                                    }
+                                }, (err,data) => {
+                                    if(err){
+                                        console.log(err);
+                                        return;
+                                    }
+                                    resolve();
+                                });
+                            }
+                        });
                     });
-                });
-            });
+                } else{
+                    console.error('Config File not Found in ' + file);
+                    resolve();
+                }
         });
     });
 }
-function generateStructure(structure){
+function generateStructure(structure, level, menue){
     return new Promise((resolve, reject) => {
-        let obj = {
-            title: structure.children[0].value,
-            id: structure.depth + '_'+ structure.children[0].value,
-            children:[],
-            specialContent:''
-        }
-        if(specialComands.indexOf(structure.children[0].value) !== -1){
-            if(structure.children[1].children[0].type === 'text') {
-                obj.specialContent = structure.children[1].children[0].value;
+        let multiPromise = [];
+        structure.forEach((dataItem) => {
+            if(dataItem.level === level){
+                let tempObj = {
+                    id: dataItem.level + '_' + dataItem.id,
+                    title: dataItem.text,
+                    children:[]
+                };
+                tempLevel = level + 1;
+                multiPromise.push(generateStructure(structure,tempLevel ,tempObj));
             }
-            if(structure.children[1].children[0].type === 'listItem') {
-                obj.specialContent = structure.children[1].children.map((dataItem) => {
-
-                    return dataItem.children[0].children[0].value;
-                });
+        });
+        Promise.all(multiPromise).then((listMenus) => {
+            if(Array.isArray(menue) === true) {
+                menue = listMenus;
+            }else {
+                menue.children = listMenus;
             }
-            if(structure.children[1].children[0].type === 'inlineLink') {
-                obj.specialContent = structure.children[1].children[0].value;
-            }
-        }
-        if(structure.children.length > 1) {
-            const multiPromises = [];
-            structure.children.forEach((line) => {
-                if(line.type === "heading") {
-                    multiPromises.push(generateStructure(line));
-                }
-            });
-            Promise.all(multiPromises).then((children) => {
-                obj.children = children;
-                resolve(obj);
-            });
-        }else {
-            resolve(obj);
-        }
+            resolve(menue);
+        });
     });
+
 }
 function deletePartner(title,language,type,Resource) {
     return  Resource.deleteOne({ title: title,  language: language,  type: type })
@@ -213,50 +220,100 @@ function multiCreateTag(index,Tag, list,cb){
         });
     }
 }
-function extractDataFromArticle(newStructure,fileName, dataContent) {
+function extractDataFromArticle(newStructure, fileName, dataContent) {
     let title = '';
-    let titleIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppTitle'; });
-    if(titleIndex !== -1) {
-        title = newStructure[titleIndex].specialContent;
-    }else {
+    let type = '';
+    let authors = [];
+    let tags = [];
+    let previewPicture = '';
+    let previewContent = '';
+    let lng = '';
+    for(let i = 0; i < newStructure.length; i = i + 2) {
+        const dataItem = newStructure[i];
+        let dataItemValue;
+        if(newStructure[i + 1] === '\n' || newStructure[i + 1] === '\r'){
+            dataItemValue = newStructure[i + 2];
+        }else {
+            dataItemValue = newStructure[i + 1];
+        }
+        if(dataItem.tag === 'h1') {
+            switch (dataItem.props.id) {
+                case 'apptitle':
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if(dataItemValue.children.length > 0) {
+                            title = dataItemValue.children[0];
+                        }
+                    }
+                    break;
+                case 'apptype':
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if (dataItemValue.children.length > 0) {
+                            type = dataItemValue.children[0];
+                        }
+                    }
+                    break;
+                case 'apppreviewcontent':
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if (dataItemValue.children.length > 0) {
+                            previewContent = dataItemValue.children[0];
+                        }
+                    }
+                    break;
+                case 'appauthors':
+
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if (dataItemValue.children.length > 0) {
+                            dataItemValue.children.forEach((author) => {
+                                if(author !== '\n') {
+                                    if(author.children.length > 0) {
+                                        authors.push(author.children[0]);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    break;
+                case 'applanguage':
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if (dataItemValue.children.length > 0) {
+                            lng = dataItemValue.children[0];
+                        }
+                    }
+                    break;
+                case 'apptags':
+                    if(typeof dataItemValue.children !== "undefined") {
+                        if (dataItemValue.children.length > 0) {
+                            dataItemValue.children.forEach((tag) => {
+                                if(tag !== '\n') {
+                                    if(tag.children.length > 0) {
+                                        tags.push(tag.children[0]);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    if(title === ""){
         title = fileName;
     }
-    let type = '';
-    let typeIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppType'; });
-    if(typeIndex !== -1) {
-        type = newStructure[typeIndex].specialContent;
-    }
-    let authors = [];
-    let authorsIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppAuthors'; });
-    if(authorsIndex !== -1) {
-        authors = newStructure[authorsIndex].specialContent;
-    }
-    let tags = [];
-    let tagsIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppTags'; });
-    if(tagsIndex !== -1) {
-        tags = newStructure[tagsIndex].specialContent;
+    if(previewPicture === ''){
+        switch (type) {
+            case 'Article':
+                previewPicture = '/assets/defaultArticle.png';
+            case 'Tutorial':
+                previewPicture = '/assets/defaultTutorial.png';
+            case 'News':
+                previewPicture = '/assets/defaultNews.png';
+        }
+
     }
     tags.forEach((tag) => {
         tagList[tag] = '';
     });
-    let previewPicture = '';
-    let previewPictureIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewPicture'; });
-    if(previewPictureIndex !== -1) {
-        previewPicture = newStructure[previewPictureIndex].specialContent;
-    }
-    if(previewPicture === ''){
-        previewPicture = '/assets/examplePics/nodeJSExample.png';
-    }
-    let previewContent = '';
-    let previewContentIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppPreviewContent'; });
-    if(previewContentIndex !== -1) {
-        previewContent = newStructure[previewContentIndex].specialContent;
-    }
-    let lng = '';
-    let lngIndex = newStructure.findIndex((dataItem) => { return dataItem.title === 'AppLanguage'; });
-    if(lngIndex !== -1) {
-        lng = newStructure[lngIndex].specialContent;
-    }
     return {
         title,
         authors,
