@@ -143,7 +143,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                         tags: dataFromArticle.tags,
                                         breadCrumb: breadCrumb,
                                         structure: JSON.stringify(newStructure),
-                                        updatedAt: new Date(),
+                                        updatedAt: new Date(commits[commits.length -1].timestamp),
                                         previewPicture: dataFromArticle.previewPicture,
                                         previewContent: dataFromArticle.previewContent,
                                         fileName:fileName
