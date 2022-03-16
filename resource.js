@@ -2,6 +2,7 @@ const sponsorPath = "contentlib/categories";
 const path = require('path');
 const fs = require('fs');
 const mdjs = require("@moox/markdown-to-json");
+var mongoose = require('mongoose');
 
 
 const { spawn, exec } = require('child_process');
@@ -18,6 +19,7 @@ module.exports = function (Resource,Tag, VersionHistory) {
                     if(path.extname(file) === ".md") {
                         let found = false;
                         let myFilename = path.basename(file);
+
                         resourceList.forEach( (resource) => {
                             if(resource.fileName === myFilename) {
                                 found = true;
@@ -98,6 +100,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                             // Commits is an array of commits in the repo
                             if(found === false) {
                                 const newResource = new Resource({
+                                    _id: fileName.replace('.md',''),
                                     title: dataFromArticle.title,
                                     authors:dataFromArticle.authors,
                                     type: dataFromArticle.type,
@@ -126,13 +129,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                 Resource.updateMany({
                                     $and:[
                                         {
-                                            title: dataFromArticle.title
-                                        } ,
-                                        {
-                                            language: dataFromArticle.lng
-                                        },
-                                        {
-                                            type:dataFromArticle.type
+                                            _id: fileName.replace('.md','')
                                         }
                                     ]
                                 },{
