@@ -1,6 +1,6 @@
 <!--CONFIG-START-->
 # AppTitle
-GitHub OAuth with NestJS
+GitHub OAuth mit NestJS
 # AppType
 Tutorial
 # AppPreviewContent
