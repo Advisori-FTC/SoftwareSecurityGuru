@@ -94,7 +94,7 @@ function createUpdateRessource(fileName,file, language, found, Resource, Version
                                     author: dataItem.authorName,
                                     message: dataItem.subject,
                                     githubLink: 'https://github.com/Advisori-FTC/SoftwareSecurityGuru/commit/' + dataItem.hash,
-                                    timestamp: dataItem.authorDate
+                                    timestamp: new Date(dataItem.authorDate)
                                 }
                             });
                             // Commits is an array of commits in the repo
