@@ -3,7 +3,7 @@
 wir freuen uns dich auf das Repository der Platform Software Security Guru begrüssen zu dürfen.
 Diese Repository dient als Basis für die Knowledge Base der Platform. Wir möchten jeden einladen Artikel, Tutorials oder auch News rund um das Thema Sofware Security der Knowledge Base hinzufügen.
 
-
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/summary/new_code?id=Advisori-FTC_SoftwareSecurityGuru)
 
 
 ## Rules:
