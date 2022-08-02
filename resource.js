@@ -172,7 +172,7 @@ function generateStructure(structure, level, menue){
             console.log(dataItem);
             if(dataItem.level === level){
                 let tempObj = {
-                    id: dataItem.level + '_' + dataItem.id,
+                    id: dataItem.id,
                     title: dataItem.text,
                     children:[]
                 };
