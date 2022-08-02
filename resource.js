@@ -169,6 +169,7 @@ function generateStructure(structure, level, menue){
     return new Promise((resolve, reject) => {
         let multiPromise = [];
         structure.forEach((dataItem) => {
+            console.log(dataItem);
             if(dataItem.level === level){
                 let tempObj = {
                     id: dataItem.level + '_' + dataItem.id,
