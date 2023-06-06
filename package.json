@@ -18,7 +18,7 @@
   "homepage": "https://github.com/Advisori-FTC/SoftwareSecurityGuru#readme",
   "dependencies": {
     "@moox/markdown-to-json": "^1.0.0",
-    "gitlog": "^4.0.4",
+    "gitlog": "^4.0.8",
     "md-hierarchical-parser": "^1.0.1",
     "mongoose": "^6.2.2"
   }
