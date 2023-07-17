@@ -20,6 +20,6 @@
     "@moox/markdown-to-json": "^1.0.0",
     "gitlog": "^4.0.4",
     "md-hierarchical-parser": "^1.0.1",
-    "mongoose": "^6.2.2"
+    "mongoose": "^6.11.3"
   }
 }
